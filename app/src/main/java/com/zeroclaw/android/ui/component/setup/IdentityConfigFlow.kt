@@ -281,10 +281,11 @@ private fun CommunicationStylePicker(
                 selected = isSelected,
                 onClick = { onStyleChanged(option.id) },
                 label = { Text(label) },
-                modifier = Modifier.semantics {
-                    contentDescription = styleChipContentDescription
-                    role = Role.RadioButton
-                },
+                modifier =
+                    Modifier.semantics {
+                        contentDescription = styleChipContentDescription
+                        role = Role.RadioButton
+                    },
             )
         }
     }

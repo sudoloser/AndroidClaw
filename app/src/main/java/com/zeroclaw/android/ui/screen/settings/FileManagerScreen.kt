@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Folder
@@ -55,9 +54,10 @@ fun FileManagerScreen(
     var deleteTarget by remember { mutableStateOf<File?>(null) }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = edgeMargin),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = edgeMargin),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
@@ -82,9 +82,10 @@ fun FileManagerScreen(
                 item {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
                     ) {
                         IconButton(onClick = {
                             currentDir = currentDir.parentFile!!
@@ -113,17 +114,27 @@ fun FileManagerScreen(
             items(sorted, key = { it.absolutePath }) { file ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
                 ) {
                     Icon(
-                        imageVector = if (file.isDirectory) Icons.Filled.Folder
-                        else if (file.name.endsWith(".toml")) Icons.Filled.Description
-                        else Icons.Filled.InsertDriveFile,
+                        imageVector =
+                            if (file.isDirectory) {
+                                Icons.Filled.Folder
+                            } else if (file.name.endsWith(".toml")) {
+                                Icons.Filled.Description
+                            } else {
+                                Icons.Filled.InsertDriveFile
+                            },
                         contentDescription = null,
-                        tint = if (file.isDirectory) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface,
+                        tint =
+                            if (file.isDirectory) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -145,11 +156,12 @@ fun FileManagerScreen(
                             try {
                                 fileContent = file.readText()
                             } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.file_manager_file_read_error),
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+                                Toast
+                                    .makeText(
+                                        context,
+                                        context.getString(R.string.file_manager_file_read_error),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
                             }
                         }) {
                             Text("View")
@@ -177,8 +189,12 @@ fun FileManagerScreen(
                     val ok = target.delete()
                     deleteTarget = null
                     entries = currentDir.listFiles()?.toList() ?: emptyList()
-                    val msg = if (ok) context.getString(R.string.file_manager_delete_success)
-                    else context.getString(R.string.file_manager_delete_error)
+                    val msg =
+                        if (ok) {
+                            context.getString(R.string.file_manager_delete_success)
+                        } else {
+                            context.getString(R.string.file_manager_delete_error)
+                        }
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 }) {
                     Text(context.getString(R.string.common_delete))

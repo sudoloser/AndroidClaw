@@ -6,14 +6,14 @@
 
 package com.zeroclaw.android.ui.component
 
-import com.zeroclaw.android.R
-import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import com.zeroclaw.android.R
 
 /** Number of trailing characters shown unmasked. */
 private const val VISIBLE_SUFFIX_LENGTH = 4

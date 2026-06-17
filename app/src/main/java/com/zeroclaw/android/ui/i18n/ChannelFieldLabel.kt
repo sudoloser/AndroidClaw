@@ -82,9 +82,7 @@ private fun String.channelFieldLabelResIdOrNull(): Int? =
         else -> null
     }
 
-fun ChannelFieldSpec.localizedLabel(context: Context): String =
-    key.channelFieldLabelResIdOrNull()?.let(context::getString) ?: label
+fun ChannelFieldSpec.localizedLabel(context: Context): String = key.channelFieldLabelResIdOrNull()?.let(context::getString) ?: label
 
 @Composable
-fun ChannelFieldSpec.localizedLabel(): String =
-    key.channelFieldLabelResIdOrNull()?.let { stringResource(it) } ?: label
+fun ChannelFieldSpec.localizedLabel(): String = key.channelFieldLabelResIdOrNull()?.let { stringResource(it) } ?: label

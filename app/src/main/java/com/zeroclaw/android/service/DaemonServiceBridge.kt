@@ -703,8 +703,7 @@ class DaemonServiceBridge(
      * @throws FfiException if the daemon is not running.
      */
     @Throws(FfiException::class)
-    suspend fun fetchRunningConfig(): String =
-        withContext(ioDispatcher) { getRunningConfig() }
+    suspend fun fetchRunningConfig(): String = withContext(ioDispatcher) { getRunningConfig() }
 
     /**
      * Stops and re-starts the daemon with a fresh configuration.

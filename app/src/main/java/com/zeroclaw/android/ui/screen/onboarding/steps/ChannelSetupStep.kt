@@ -6,7 +6,6 @@
 
 package com.zeroclaw.android.ui.screen.onboarding.steps
 
-import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,14 +23,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.zeroclaw.android.R
 import com.zeroclaw.android.model.ChannelType
 import com.zeroclaw.android.model.FieldInputType
-import com.zeroclaw.android.ui.i18n.localizedLabel
 import com.zeroclaw.android.ui.i18n.localizedDisplayName
+import com.zeroclaw.android.ui.i18n.localizedLabel
 
 /** Standard spacing between form fields. */
 private const val FIELD_SPACING_DP = 12

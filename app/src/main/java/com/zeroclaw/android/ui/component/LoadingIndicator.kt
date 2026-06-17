@@ -6,15 +6,15 @@
 
 package com.zeroclaw.android.ui.component
 
-import com.zeroclaw.android.R
-import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zeroclaw.android.R
 import com.zeroclaw.android.util.LocalPowerSaveMode
 
 /**

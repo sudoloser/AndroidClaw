@@ -6,7 +6,6 @@
 
 package com.zeroclaw.android.ui.screen.settings.channels
 
-import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,8 +57,8 @@ import com.zeroclaw.android.model.FieldInputType
 import com.zeroclaw.android.ui.component.CollapsibleSection
 import com.zeroclaw.android.ui.component.SecretTextField
 import com.zeroclaw.android.ui.component.setup.ChannelSetupFlow
-import com.zeroclaw.android.ui.i18n.localizedLabel
 import com.zeroclaw.android.ui.i18n.localizedDisplayName
+import com.zeroclaw.android.ui.i18n.localizedLabel
 import com.zeroclaw.android.ui.screen.settings.apikeys.SaveState
 import java.util.UUID
 import kotlinx.coroutines.launch
@@ -307,21 +307,21 @@ private fun EditChannelFormContent(
     ) {
         Spacer(modifier = Modifier.height(HEADING_SPACING_DP.dp))
 
-    Text(
-        text =
-            if (channelId != null) {
-                stringResource(
-                    R.string.channel_detail_title_edit,
-                    currentType.localizedDisplayName(),
-                )
-            } else {
-                stringResource(
-                    R.string.channel_detail_title_add,
-                    currentType.localizedDisplayName(),
-                )
-            },
-        style = MaterialTheme.typography.headlineSmall,
-    )
+        Text(
+            text =
+                if (channelId != null) {
+                    stringResource(
+                        R.string.channel_detail_title_edit,
+                        currentType.localizedDisplayName(),
+                    )
+                } else {
+                    stringResource(
+                        R.string.channel_detail_title_add,
+                        currentType.localizedDisplayName(),
+                    )
+                },
+            style = MaterialTheme.typography.headlineSmall,
+        )
         if (currentType.tomlKey == "irc" || currentType.tomlKey == "lark") {
             Card(
                 colors =

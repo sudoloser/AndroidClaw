@@ -6,8 +6,6 @@
 
 package com.zeroclaw.android.ui.screen.settings
 
-import com.zeroclaw.android.R
-import androidx.compose.ui.res.stringResource
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
@@ -31,10 +29,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.zeroclaw.android.BuildConfig
+import com.zeroclaw.android.R
 import com.zeroclaw.android.ui.component.SectionHeader
 import com.zeroclaw.ffi.getVersion
 

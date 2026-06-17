@@ -45,16 +45,12 @@ private fun String.providerKeyPrefixHintResIdOrNull(): Int? =
         else -> null
     }
 
-fun ProviderInfo.localizedHelpText(context: Context): String =
-    id.providerHelpTextResIdOrNull()?.let(context::getString) ?: helpText
+fun ProviderInfo.localizedHelpText(context: Context): String = id.providerHelpTextResIdOrNull()?.let(context::getString) ?: helpText
 
-fun ProviderInfo.localizedKeyPrefixHint(context: Context): String =
-    id.providerKeyPrefixHintResIdOrNull()?.let(context::getString) ?: keyPrefixHint
+fun ProviderInfo.localizedKeyPrefixHint(context: Context): String = id.providerKeyPrefixHintResIdOrNull()?.let(context::getString) ?: keyPrefixHint
 
 @Composable
-fun ProviderInfo.localizedHelpText(): String =
-    id.providerHelpTextResIdOrNull()?.let { stringResource(it) } ?: helpText
+fun ProviderInfo.localizedHelpText(): String = id.providerHelpTextResIdOrNull()?.let { stringResource(it) } ?: helpText
 
 @Composable
-fun ProviderInfo.localizedKeyPrefixHint(): String =
-    id.providerKeyPrefixHintResIdOrNull()?.let { stringResource(it) } ?: keyPrefixHint
+fun ProviderInfo.localizedKeyPrefixHint(): String = id.providerKeyPrefixHintResIdOrNull()?.let { stringResource(it) } ?: keyPrefixHint

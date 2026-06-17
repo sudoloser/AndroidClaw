@@ -70,10 +70,11 @@ fun ConfigEditorScreen(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = edgeMargin)
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = edgeMargin)
+                .verticalScroll(rememberScrollState()),
     ) {
         Spacer(modifier = Modifier.height(SECTION_SPACING_DP.dp))
         Text(
@@ -132,18 +133,20 @@ fun ConfigEditorScreen(
                                 action = ZeroClawDaemonService.ACTION_START
                             }
                         context.startForegroundService(startIntent)
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.config_editor_save_success),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        Toast
+                            .makeText(
+                                context,
+                                context.getString(R.string.config_editor_save_success),
+                                Toast.LENGTH_SHORT,
+                            ).show()
                     } catch (e: Exception) {
                         if (validationError == null) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.config_editor_save_error) + ": " + e.message,
-                                Toast.LENGTH_LONG,
-                            ).show()
+                            Toast
+                                .makeText(
+                                    context,
+                                    context.getString(R.string.config_editor_save_error) + ": " + e.message,
+                                    Toast.LENGTH_LONG,
+                                ).show()
                         }
                     } finally {
                         isSaving = false
@@ -151,14 +154,18 @@ fun ConfigEditorScreen(
                 }
             },
             enabled = !isSaving && validationError == null && configText.isNotBlank(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = MIN_TOUCH_TARGET_DP.dp)
-                .semantics { contentDescription = saveDesc },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = MIN_TOUCH_TARGET_DP.dp)
+                    .semantics { contentDescription = saveDesc },
         ) {
             Text(
-                if (isSaving) "..."
-                else context.getString(R.string.config_editor_save)
+                if (isSaving) {
+                    "..."
+                } else {
+                    context.getString(R.string.config_editor_save)
+                },
             )
         }
         Spacer(modifier = Modifier.height(SECTION_SPACING_DP.dp))

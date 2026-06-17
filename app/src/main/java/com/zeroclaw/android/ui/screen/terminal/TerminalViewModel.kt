@@ -392,11 +392,11 @@ class TerminalViewModel(
         viewModelScope.launch {
             _streamingState.update { StreamingState(phase = StreamingPhase.THINKING) }
 
-                try {
-                    withContext(Dispatchers.IO) {
-                        check(ensureSession()) {
-                            getString(R.string.terminal_no_active_session)
-                        }
+            try {
+                withContext(Dispatchers.IO) {
+                    check(ensureSession()) {
+                        getString(R.string.terminal_no_active_session)
+                    }
                     sessionSend(
                         message,
                         images.map { it.base64Data },

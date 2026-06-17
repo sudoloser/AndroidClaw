@@ -78,5 +78,4 @@ object ErrorSanitizer {
             msg
         }
     }
-
 }

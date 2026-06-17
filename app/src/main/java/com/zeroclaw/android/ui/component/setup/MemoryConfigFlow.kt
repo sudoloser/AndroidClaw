@@ -481,10 +481,11 @@ private fun RetentionPicker(
                 selected = isSelected,
                 onClick = { onRetentionDaysChanged(option.days) },
                 label = { Text(label) },
-                modifier = Modifier.semantics {
-                    contentDescription = retentionChipContentDescription
-                    role = Role.RadioButton
-                },
+                modifier =
+                    Modifier.semantics {
+                        contentDescription = retentionChipContentDescription
+                        role = Role.RadioButton
+                    },
             )
         }
     }

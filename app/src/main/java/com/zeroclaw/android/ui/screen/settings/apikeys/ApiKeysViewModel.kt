@@ -35,8 +35,8 @@ import com.zeroclaw.android.service.AgentTomlEntry
 import com.zeroclaw.android.service.ConfigTomlBuilder
 import com.zeroclaw.android.service.GlobalTomlConfig
 import com.zeroclaw.android.service.SetupOrchestrator
-import com.zeroclaw.android.ui.i18n.localizedProviderDisplayName
 import com.zeroclaw.android.service.ZeroClawDaemonService
+import com.zeroclaw.android.ui.i18n.localizedProviderDisplayName
 import com.zeroclaw.android.ui.screen.setup.SetupProgress
 import java.io.IOException
 import java.security.GeneralSecurityException
@@ -1238,8 +1238,8 @@ class ApiKeysViewModel(
             else -> getString(R.string.api_keys_error_operation_failed)
         }
 
-    private fun mapConnectionErrorLocalized(e: Throwable): String {
-        return when (mapConnectionError(e)) {
+    private fun mapConnectionErrorLocalized(e: Throwable): String =
+        when (mapConnectionError(e)) {
             ConnectionErrorKind.HTTP_401 -> getString(R.string.api_keys_connection_http_401)
             ConnectionErrorKind.HTTP_403 -> getString(R.string.api_keys_connection_http_403)
             ConnectionErrorKind.HTTP_404 -> getString(R.string.api_keys_connection_http_404)
@@ -1248,7 +1248,6 @@ class ApiKeysViewModel(
             ConnectionErrorKind.TIMEOUT -> getString(R.string.api_keys_connection_timeout)
             ConnectionErrorKind.GENERIC -> getString(R.string.api_keys_connection_failed_generic)
         }
-    }
 
     private fun getString(
         resId: Int,

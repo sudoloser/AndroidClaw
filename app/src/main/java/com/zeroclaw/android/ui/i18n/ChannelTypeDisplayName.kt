@@ -37,10 +37,8 @@ private fun ChannelType.displayNameResIdOrNull(): Int? =
     }
 
 /** Localized channel display name for non-Compose call sites. */
-fun ChannelType.localizedDisplayName(context: Context): String =
-    displayNameResIdOrNull()?.let(context::getString) ?: displayName
+fun ChannelType.localizedDisplayName(context: Context): String = displayNameResIdOrNull()?.let(context::getString) ?: displayName
 
 /** Localized channel display name for Compose call sites. */
 @Composable
-fun ChannelType.localizedDisplayName(): String =
-    displayNameResIdOrNull()?.let { stringResource(it) } ?: displayName
+fun ChannelType.localizedDisplayName(): String = displayNameResIdOrNull()?.let { stringResource(it) } ?: displayName

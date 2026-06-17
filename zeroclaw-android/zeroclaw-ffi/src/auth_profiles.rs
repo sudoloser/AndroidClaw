@@ -132,12 +132,10 @@ pub(crate) fn list_auth_profiles_inner() -> Result<Vec<FfiAuthProfile>, FfiError
                 .map(|dt| dt.timestamp_millis());
 
             let created_at_ms = chrono::DateTime::parse_from_rfc3339(&p.created_at)
-                .map(|dt| dt.timestamp_millis())
-                .unwrap_or(0);
+                .map_or(0, |dt| dt.timestamp_millis());
 
             let updated_at_ms = chrono::DateTime::parse_from_rfc3339(&p.updated_at)
-                .map(|dt| dt.timestamp_millis())
-                .unwrap_or(0);
+                .map_or(0, |dt| dt.timestamp_millis());
 
             FfiAuthProfile {
                 id: p.id.clone(),

@@ -51,12 +51,10 @@ private fun String.providerDisplayNameResIdOrNull(): Int? =
         else -> null
     }
 
-fun ProviderInfo.localizedDisplayName(context: Context): String =
-    id.providerDisplayNameResIdOrNull()?.let(context::getString) ?: displayName
+fun ProviderInfo.localizedDisplayName(context: Context): String = id.providerDisplayNameResIdOrNull()?.let(context::getString) ?: displayName
 
 @Composable
-fun ProviderInfo.localizedDisplayName(): String =
-    id.providerDisplayNameResIdOrNull()?.let { stringResource(it) } ?: displayName
+fun ProviderInfo.localizedDisplayName(): String = id.providerDisplayNameResIdOrNull()?.let { stringResource(it) } ?: displayName
 
 fun localizedProviderDisplayName(
     context: Context,
