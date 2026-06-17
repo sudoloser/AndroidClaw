@@ -9,6 +9,7 @@ package com.zeroclaw.android.data.repository
 import android.util.Log
 import com.zeroclaw.android.data.local.dao.PluginDao
 import com.zeroclaw.android.data.local.entity.PluginEntity
+import com.zeroclaw.android.data.local.entity.toEntity
 import com.zeroclaw.android.data.local.entity.toModel
 import com.zeroclaw.android.model.AppSettings
 import com.zeroclaw.android.model.OfficialPlugins
