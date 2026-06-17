@@ -6,6 +6,7 @@ import com.zeroclaw.android.model.ActivityEvent
 import com.zeroclaw.android.model.ActivityType
 import com.zeroclaw.android.model.Agent
 import com.zeroclaw.android.model.ApiKey
+import com.zeroclaw.android.model.ChannelConfig
 import com.zeroclaw.android.model.AppSettings
 import com.zeroclaw.android.model.ChannelType
 import com.zeroclaw.android.model.ConnectedChannel
@@ -513,17 +514,17 @@ object BackupManager {
         for (i in 0 until json.length()) {
             val obj = json.getJSONObject(i)
             val channelsArr = obj.optJSONArray("channels")
-            val channels = if (channelsArr != null) {
+            val channels: List<ChannelConfig> = if (channelsArr != null) {
                 (0 until channelsArr.length()).map { idx ->
                     val chObj = channelsArr.getJSONObject(idx)
-                    Agent.ChannelConfig(
+                    ChannelConfig(
                         type = chObj.getString("type"),
                         endpoint = chObj.getString("endpoint"),
                     )
                 }
             } else emptyList()
 
-            val temp = if (obj.isNull("temperature")) null else obj.optDouble("temperature", -1.0).let {
+            val temp: Float? = if (obj.isNull("temperature")) null else obj.optDouble("temperature", -1.0).let {
                 if (it < 0) null else it.toFloat()
             }
 
