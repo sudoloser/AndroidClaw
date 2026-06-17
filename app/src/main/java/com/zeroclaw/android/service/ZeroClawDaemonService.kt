@@ -455,7 +455,7 @@ class ZeroClawDaemonService : Service() {
             memoryBackend = settings.memoryBackend,
             memoryAutoSave = settings.memoryAutoSave,
             identityJson = settings.identityJson,
-            autonomyLevel = settings.autonomyLevel,
+            autonomyLevel = mapAutonomyLevel(settings.autonomyLevel),
             workspaceOnly = settings.workspaceOnly,
             allowedCommands = splitCsv(settings.allowedCommands),
             forbiddenPaths = splitCsv(settings.forbiddenPaths),
@@ -1151,3 +1151,19 @@ class ZeroClawDaemonService : Service() {
  * @return List of trimmed non-blank tokens; empty list if [csv] is blank.
  */
 private fun splitCsv(csv: String): List<String> = csv.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
+/**
+ * Maps the app's autonomy level values to the values accepted by the
+ * Rust daemon config. The UI uses "supervised", "constrained", and
+ * "unconstrained", while the daemon expects "readonly", "supervised",
+ * or "full".
+ *
+ * @param level The autonomy level from [AppSettings].
+ * @return The mapped level accepted by [GlobalTomlConfig.VALID_AUTONOMY_LEVELS].
+ */
+private fun mapAutonomyLevel(level: String): String = when (level) {
+    "unconstrained" -> "full"
+    "constrained" -> "readonly"
+    "supervised" -> "supervised"
+    else -> "supervised"
+}
