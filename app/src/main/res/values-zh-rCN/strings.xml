@@ -554,6 +554,7 @@
     <string name="common_provider">提供商</string>
     <string name="common_refresh">刷新</string>
     <string name="common_restart">重启</string>
+    <string name="common_rename">重命名</string>
     <string name="common_resume">恢复</string>
     <string name="common_retry">重试</string>
     <string name="common_save">保存</string>
@@ -1649,4 +1650,26 @@
     <string name="file_manager_delete_error">删除文件失败</string>
     <string name="file_manager_file_read_error">读取文件失败</string>
     <string name="file_manager_empty_dir">此目录为空</string>
+    <string name="file_manager_create_file_title">创建文件</string>
+    <string name="file_manager_create_file_label">文件名</string>
+    <string name="file_manager_create_folder_title">创建文件夹</string>
+    <string name="file_manager_create_folder_label">文件夹名</string>
+    <string name="file_manager_create_action">创建</string>
+    <string name="file_manager_create_success">创建成功</string>
+    <string name="file_manager_create_error">创建失败</string>
+    <string name="file_manager_rename_title">重命名</string>
+    <string name="file_manager_rename_label">新名称</string>
+    <string name="file_manager_rename_success">重命名成功</string>
+    <string name="file_manager_rename_error">重命名失败</string>
+    <string name="file_manager_move_title">移动</string>
+    <string name="file_manager_move_description">移动 %s 到：</string>
+    <string name="file_manager_move_label">目标路径</string>
+    <string name="file_manager_move_action">移动</string>
+    <string name="file_manager_move_success">移动成功</string>
+    <string name="file_manager_move_error">移动失败</string>
+    <string name="file_manager_upload_success">文件上传成功</string>
+    <string name="file_manager_upload_error">上传失败</string>
+    <string name="file_manager_folder_import_hint">使用设备文件管理器将文件复制到工作区目录</string>
+    <string name="file_manager_save_success">文件已保存</string>
+    <string name="file_manager_save_error">保存失败</string>
 </resources>

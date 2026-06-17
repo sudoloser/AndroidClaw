@@ -220,54 +220,70 @@ class ZeroClawDaemonService : Service() {
         acquireWakeLock()
 
         serviceScope.launch(ioDispatcher) {
-            val settings = settingsRepository.settings.first()
-            val effectiveSettings = resolveEffectiveDefaults(settings)
-            val mergedSettings = mergeUpstreamPairedTokens(effectiveSettings)
-            val seededSettings = preSeedGatewayTokenIfNeeded(mergedSettings)
-            val apiKey = apiKeyRepository.getByProviderFresh(seededSettings.defaultProvider)
+            try {
+                val settings = settingsRepository.settings.first()
+                val effectiveSettings = resolveEffectiveDefaults(settings)
+                val mergedSettings = mergeUpstreamPairedTokens(effectiveSettings)
+                val seededSettings = preSeedGatewayTokenIfNeeded(mergedSettings)
+                val apiKey = apiKeyRepository.getByProviderFresh(seededSettings.defaultProvider)
 
-            val configToml: String
-            val overrideFile = java.io.File(filesDir, "config_override.toml")
-            if (overrideFile.exists()) {
-                val overrideText = overrideFile.readText()
-                if (overrideText.isNotBlank()) {
-                    configToml = overrideText
+                val configToml: String
+                val overrideFile = java.io.File(filesDir, "config_override.toml")
+                if (overrideFile.exists()) {
+                    val overrideText = overrideFile.readText()
+                    if (overrideText.isNotBlank()) {
+                        configToml = overrideText
+                    } else {
+                        Log.w(TAG, "config_override.toml is empty, falling back to settings build")
+                        configToml = buildConfigFromSettings(settings, effectiveSettings, seededSettings, apiKey)
+                    }
+                    if (!validateConfigOrStop(configToml)) return@launch
                 } else {
-                    Log.w(TAG, "config_override.toml is empty, falling back to settings build")
                     configToml = buildConfigFromSettings(settings, effectiveSettings, seededSettings, apiKey)
                 }
-                if (!validateConfigOrStop(configToml)) return@launch
-            } else {
-                configToml = buildConfigFromSettings(settings, effectiveSettings, seededSettings, apiKey)
-            }
 
-            val conflict = bridge.detectMemoryConflict(seededSettings.memoryBackend)
-            if (conflict is MemoryConflict.StaleData) {
-                val shouldDelete = bridge.awaitConflictResolution(conflict)
-                if (shouldDelete) {
-                    bridge.cleanupStaleMemory(conflict)
-                    logRepository.append(
-                        LogSeverity.INFO,
-                        TAG,
-                        "Cleaned up ${conflict.staleFileCount} stale " +
-                            "${conflict.staleBackend} memory files",
-                    )
+                val conflict = bridge.detectMemoryConflict(seededSettings.memoryBackend)
+                if (conflict is MemoryConflict.StaleData) {
+                    val shouldDelete = bridge.awaitConflictResolution(conflict)
+                    if (shouldDelete) {
+                        bridge.cleanupStaleMemory(conflict)
+                        logRepository.append(
+                            LogSeverity.INFO,
+                            TAG,
+                            "Cleaned up ${conflict.staleFileCount} stale " +
+                                "${conflict.staleBackend} memory files",
+                        )
+                    }
                 }
-            }
 
-            retryPolicy.reset()
-            val validPort =
-                if (settings.port in VALID_PORT_RANGE) {
-                    settings.port
-                } else {
-                    AppSettings.DEFAULT_PORT
-                }
-            attemptStart(
-                configToml = configToml,
-                host = settings.host,
-                port = validPort.toUShort(),
-                memoryBackend = seededSettings.memoryBackend,
-            )
+                retryPolicy.reset()
+                val validPort =
+                    if (settings.port in VALID_PORT_RANGE) {
+                        settings.port
+                    } else {
+                        AppSettings.DEFAULT_PORT
+                    }
+                attemptStart(
+                    configToml = configToml,
+                    host = settings.host,
+                    port = validPort.toUShort(),
+                    memoryBackend = seededSettings.memoryBackend,
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "Unexpected error during daemon startup", e)
+                logRepository.append(LogSeverity.ERROR, TAG, "Startup error: ${e.message}")
+                activityRepository.record(
+                    ActivityType.DAEMON_ERROR,
+                    getString(R.string.daemon_activity_start_failed, e.message ?: "Unknown error"),
+                )
+                notificationManager.updateNotification(
+                    ServiceState.ERROR,
+                    errorDetail = e.message ?: "Unknown error",
+                )
+                releaseWakeLock()
+                stopForeground(STOP_FOREGROUND_DETACH)
+                stopSelf()
+            }
         }
     }
 

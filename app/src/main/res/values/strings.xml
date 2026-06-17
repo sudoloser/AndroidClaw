@@ -554,6 +554,7 @@
     <string name="common_provider">Provider</string>
     <string name="common_refresh">Refresh</string>
     <string name="common_restart">Restart</string>
+    <string name="common_rename">Rename</string>
     <string name="common_resume">Resume</string>
     <string name="common_retry">Retry</string>
     <string name="common_save">Save</string>
@@ -1649,4 +1650,26 @@
     <string name="file_manager_delete_error">Failed to delete file</string>
     <string name="file_manager_file_read_error">Failed to read file</string>
     <string name="file_manager_empty_dir">This directory is empty</string>
+    <string name="file_manager_create_file_title">Create File</string>
+    <string name="file_manager_create_file_label">File name</string>
+    <string name="file_manager_create_folder_title">Create Folder</string>
+    <string name="file_manager_create_folder_label">Folder name</string>
+    <string name="file_manager_create_action">Create</string>
+    <string name="file_manager_create_success">Created successfully</string>
+    <string name="file_manager_create_error">Failed to create</string>
+    <string name="file_manager_rename_title">Rename</string>
+    <string name="file_manager_rename_label">New name</string>
+    <string name="file_manager_rename_success">Renamed successfully</string>
+    <string name="file_manager_rename_error">Failed to rename</string>
+    <string name="file_manager_move_title">Move</string>
+    <string name="file_manager_move_description">Move %s to:</string>
+    <string name="file_manager_move_label">Destination path</string>
+    <string name="file_manager_move_action">Move</string>
+    <string name="file_manager_move_success">Moved successfully</string>
+    <string name="file_manager_move_error">Failed to move</string>
+    <string name="file_manager_upload_success">File uploaded</string>
+    <string name="file_manager_upload_error">Failed to upload</string>
+    <string name="file_manager_folder_import_hint">Use the device file manager to copy files into the workspace directory</string>
+    <string name="file_manager_save_success">File saved</string>
+    <string name="file_manager_save_error">Failed to save</string>
 </resources>

@@ -8,6 +8,8 @@ package com.zeroclaw.android.viewmodel
 
 import android.app.Application
 import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.zeroclaw.android.R
@@ -250,15 +252,26 @@ class DaemonViewModel(
         performStop()
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun performStart() {
-        val intent =
-            Intent(
-                getApplication(),
-                ZeroClawDaemonService::class.java,
-            ).apply {
-                action = ZeroClawDaemonService.ACTION_START
-            }
-        getApplication<Application>().startForegroundService(intent)
+        try {
+            val intent =
+                Intent(
+                    getApplication(),
+                    ZeroClawDaemonService::class.java,
+                ).apply {
+                    action = ZeroClawDaemonService.ACTION_START
+                }
+            getApplication<Application>().startForegroundService(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start daemon service", e)
+            Toast
+                .makeText(
+                    getApplication(),
+                    "Failed to start: ${e.message}",
+                    Toast.LENGTH_LONG,
+                ).show()
+        }
     }
 
     private fun performStop() {
@@ -393,6 +406,7 @@ class DaemonViewModel(
 
     /** Constants for [DaemonViewModel]. */
     companion object {
+        private const val TAG = "DaemonViewModel"
         private const val HEALTH_POLL_INTERVAL_MS = 15_000L
         private const val COST_POLL_INTERVAL_MS = 30_000L
         private const val CRON_POLL_INTERVAL_MS = 30_000L
