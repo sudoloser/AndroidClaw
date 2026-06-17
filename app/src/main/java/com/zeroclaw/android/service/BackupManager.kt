@@ -52,6 +52,143 @@ data class BackupManifest(
 object BackupManager {
     private const val TAG = "BackupManager"
 
+    /**
+     * Returns the suggested filename for the current backup, e.g.
+     * "zeroclaw-android-2026-06-17-120000.backup".
+     */
+    fun suggestedBackupName(): String {
+        val datePart = SimpleDateFormat("yyyy-MM-dd-HHmmss", Locale.US).format(Date())
+        return "zeroclaw-android-$datePart.backup"
+    }
+
+    /**
+     * Writes the bytes of an already-created backup file to a content [Uri].
+     */
+    suspend fun writeBackupToUri(
+        context: Context,
+        sourceFile: File,
+        targetUri: android.net.Uri,
+    ) = withContext(Dispatchers.IO) {
+        context.contentResolver.openOutputStream(targetUri)?.use { out ->
+            sourceFile.inputStream().use { inp ->
+                inp.copyTo(out)
+            }
+        } ?: throw Exception("Failed to open output stream for URI")
+    }
+
+    /**
+     * Reads all zip entries from a backup file accessed via content [Uri]
+     * and returns them as a name-to-content map.
+     */
+    suspend fun readZipEntriesFromUri(
+        context: Context,
+        uri: android.net.Uri,
+    ): Map<String, String> = withContext(Dispatchers.IO) {
+        val map = mutableMapOf<String, String>()
+        context.contentResolver.openInputStream(uri)?.use { input ->
+            java.util.zip.ZipInputStream(input).use { zis ->
+                var entry = zis.nextEntry
+                while (entry != null) {
+                    if (!entry.isDirectory) {
+                        map[entry.name] = zis.readBytes().toString(Charsets.UTF_8)
+                    }
+                    entry = zis.nextEntry
+                }
+            }
+        } ?: throw Exception("Failed to open input stream for URI")
+        map
+    }
+
+    /**
+     * Restores data from entries already parsed into a map.
+     * Used by both [restoreBackup] (file-based) and restore-from-URI flows.
+     */
+    suspend fun restoreFromEntries(
+        context: Context,
+        entries: Map<String, String>,
+        settingsRepo: SettingsRepository,
+        apiKeyRepo: ApiKeyRepository,
+        channelRepo: ChannelConfigRepository,
+        agentRepo: AgentRepository,
+        activityRepo: ActivityRepository,
+        logRepo: LogRepository,
+        sections: List<String>,
+    ): String = withContext(Dispatchers.IO) {
+        val results = mutableListOf<String>()
+
+        if ("settings" in sections && "settings.json" in entries) {
+            try {
+                val json = JSONObject(entries["settings.json"]!!)
+                restoreSettings(settingsRepo, json)
+                results.add("Settings restored")
+            } catch (e: Exception) {
+                results.add("Settings failed: ${e.message}")
+            }
+        }
+
+        if ("api_keys" in sections && "api_keys.json" in entries) {
+            try {
+                val json = JSONArray(entries["api_keys.json"]!!)
+                restoreApiKeys(apiKeyRepo, json)
+                results.add("API keys restored")
+            } catch (e: Exception) {
+                results.add("API keys failed: ${e.message}")
+            }
+        }
+
+        if ("channels" in sections && "channels.json" in entries) {
+            try {
+                val json = JSONArray(entries["channels.json"]!!)
+                restoreChannels(channelRepo, json)
+                results.add("Channels restored")
+            } catch (e: Exception) {
+                results.add("Channels failed: ${e.message}")
+            }
+        }
+
+        if ("agents" in sections && "agents.json" in entries) {
+            try {
+                val json = JSONArray(entries["agents.json"]!!)
+                restoreAgents(agentRepo, json)
+                results.add("Agents restored")
+            } catch (e: Exception) {
+                results.add("Agents failed: ${e.message}")
+            }
+        }
+
+        if ("config_override" in sections && "config_override.toml" in entries) {
+            try {
+                val content = entries["config_override.toml"]!!
+                File(context.filesDir, "config_override.toml").writeText(content)
+                results.add("Config override restored")
+            } catch (e: Exception) {
+                results.add("Config override failed: ${e.message}")
+            }
+        }
+
+        if ("activity" in sections && "activity.json" in entries) {
+            try {
+                val json = JSONArray(entries["activity.json"]!!)
+                restoreActivity(activityRepo, json)
+                results.add("Activity restored")
+            } catch (e: Exception) {
+                results.add("Activity failed: ${e.message}")
+            }
+        }
+
+        if ("logs" in sections && "logs.json" in entries) {
+            try {
+                val json = JSONArray(entries["logs.json"]!!)
+                restoreLogs(logRepo, json)
+                results.add("Logs restored")
+            } catch (e: Exception) {
+                results.add("Logs failed: ${e.message}")
+            }
+        }
+
+        results.joinToString("\n")
+    }
+
     suspend fun createBackup(
         context: Context,
         settingsRepo: SettingsRepository,
@@ -140,80 +277,8 @@ object BackupManager {
         logRepo: LogRepository,
         sections: List<String>,
     ): String = withContext(Dispatchers.IO) {
-        val results = mutableListOf<String>()
         val entries = readZipEntries(backupFile)
-
-        if ("settings" in sections && "settings.json" in entries) {
-            try {
-                val json = JSONObject(entries["settings.json"]!!)
-                restoreSettings(settingsRepo, json)
-                results.add("Settings restored")
-            } catch (e: Exception) {
-                results.add("Settings failed: ${e.message}")
-            }
-        }
-
-        if ("api_keys" in sections && "api_keys.json" in entries) {
-            try {
-                val json = JSONArray(entries["api_keys.json"]!!)
-                restoreApiKeys(apiKeyRepo, json)
-                results.add("API keys restored")
-            } catch (e: Exception) {
-                results.add("API keys failed: ${e.message}")
-            }
-        }
-
-        if ("channels" in sections && "channels.json" in entries) {
-            try {
-                val json = JSONArray(entries["channels.json"]!!)
-                restoreChannels(channelRepo, json)
-                results.add("Channels restored")
-            } catch (e: Exception) {
-                results.add("Channels failed: ${e.message}")
-            }
-        }
-
-        if ("agents" in sections && "agents.json" in entries) {
-            try {
-                val json = JSONArray(entries["agents.json"]!!)
-                restoreAgents(agentRepo, json)
-                results.add("Agents restored")
-            } catch (e: Exception) {
-                results.add("Agents failed: ${e.message}")
-            }
-        }
-
-        if ("config_override" in sections && "config_override.toml" in entries) {
-            try {
-                val content = entries["config_override.toml"]!!
-                File(context.filesDir, "config_override.toml").writeText(content)
-                results.add("Config override restored")
-            } catch (e: Exception) {
-                results.add("Config override failed: ${e.message}")
-            }
-        }
-
-        if ("activity" in sections && "activity.json" in entries) {
-            try {
-                val json = JSONArray(entries["activity.json"]!!)
-                restoreActivity(activityRepo, json)
-                results.add("Activity restored")
-            } catch (e: Exception) {
-                results.add("Activity failed: ${e.message}")
-            }
-        }
-
-        if ("logs" in sections && "logs.json" in entries) {
-            try {
-                val json = JSONArray(entries["logs.json"]!!)
-                restoreLogs(logRepo, json)
-                results.add("Logs restored")
-            } catch (e: Exception) {
-                results.add("Logs failed: ${e.message}")
-            }
-        }
-
-        results.joinToString("\n")
+        restoreFromEntries(context, entries, settingsRepo, apiKeyRepo, channelRepo, agentRepo, activityRepo, logRepo, sections)
     }
 
     fun listBackupFiles(context: Context): List<File> {
@@ -241,7 +306,7 @@ object BackupManager {
         zos.closeEntry()
     }
 
-    private fun readZipEntries(file: File): Map<String, String> {
+    fun readZipEntries(file: File): Map<String, String> {
         val map = mutableMapOf<String, String>()
         ZipInputStream(FileInputStream(file)).use { zis ->
             var entry = zis.nextEntry

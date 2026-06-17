@@ -1,6 +1,9 @@
 package com.zeroclaw.android.ui.screen.settings
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -62,15 +64,66 @@ fun BackupRestoreScreen(
     var isBackingUp by remember { mutableStateOf(false) }
     var isRestoring by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
+    var pendingBackupFile by remember { mutableStateOf<File?>(null) }
+    var restoreConfirmUri by remember { mutableStateOf<Uri?>(null) }
+    var restoreEntries by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+    var restoreSectionNames by remember { mutableStateOf<List<String>>(emptyList()) }
     var backupFiles by remember { mutableStateOf<List<File>>(emptyList()) }
-    var showFilePicker by remember { mutableStateOf(false) }
-    var selectedBackupFile by remember { mutableStateOf<File?>(null) }
-    var restoreSections by remember { mutableStateOf<List<String>>(emptyList()) }
+
+    fun refreshBackupFiles() {
+        backupFiles = BackupManager.listBackupFiles(context)
+    }
+
+    refreshBackupFiles()
 
     fun updateSelectAll() {
         selectAll = includeSettings && includeApiKeys && includeChannels &&
             includeAgents && includeConfigOverride
     }
+
+    val saveBackupLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri: Uri? ->
+            val file = pendingBackupFile ?: return@rememberLauncherForActivityResult
+            if (uri == null) {
+                file.delete()
+                pendingBackupFile = null
+                isBackingUp = false
+                return@rememberLauncherForActivityResult
+            }
+            scope.launch {
+                try {
+                    withContext(Dispatchers.IO) {
+                        BackupManager.writeBackupToUri(context, file, uri)
+                    }
+                    statusMessage = context.getString(R.string.backup_success, file.name)
+                    Toast.makeText(context, statusMessage, Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    statusMessage = context.getString(R.string.backup_error) + ": " + e.message
+                } finally {
+                    file.delete()
+                    pendingBackupFile = null
+                    isBackingUp = false
+                    refreshBackupFiles()
+                }
+            }
+        }
+
+    val restoreLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+            if (uri == null) return@rememberLauncherForActivityResult
+            scope.launch {
+                try {
+                    val entries = withContext(Dispatchers.IO) {
+                        BackupManager.readZipEntriesFromUri(context, uri)
+                    }
+                    restoreSectionNames = deriveSections(entries)
+                    restoreEntries = entries
+                    restoreConfirmUri = uri
+                } catch (e: Exception) {
+                    statusMessage = context.getString(R.string.backup_restore_error) + ": " + e.message
+                }
+            }
+        }
 
     Column(
         modifier =
@@ -162,7 +215,7 @@ fun BackupRestoreScreen(
                             includeActivity = includeActivity,
                             includeLogs = includeLogs,
                         )
-                        val file = withContext(Dispatchers.IO) {
+                        val tempFile = withContext(Dispatchers.IO) {
                             BackupManager.createBackup(
                                 context = context,
                                 settingsRepo = app.settingsRepository,
@@ -174,12 +227,12 @@ fun BackupRestoreScreen(
                                 options = options,
                             )
                         }
-                        backupFiles = BackupManager.listBackupFiles(context)
-                        statusMessage = context.getString(R.string.backup_success, file.name)
+                        pendingBackupFile = tempFile
+                        refreshBackupFiles()
+                        saveBackupLauncher.launch(BackupManager.suggestedBackupName())
                     } catch (e: Exception) {
-                        statusMessage = context.getString(R.string.backup_error) + ": " + e.message
-                    } finally {
                         isBackingUp = false
+                        statusMessage = context.getString(R.string.backup_error) + ": " + e.message
                     }
                 }
             },
@@ -187,6 +240,18 @@ fun BackupRestoreScreen(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(if (isBackingUp) "..." else context.getString(R.string.backup_action))
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = {
+                restoreLauncher.launch(arrayOf("application/octet-stream", "*/*"))
+            },
+            enabled = !isBackingUp && !isRestoring,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(context.getString(R.string.backup_restore_from_file))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -200,8 +265,7 @@ fun BackupRestoreScreen(
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        val files = remember { BackupManager.listBackupFiles(context) }
-        if (files.isNotEmpty()) {
+        if (backupFiles.isNotEmpty()) {
             HorizontalDivider()
             Spacer(modifier = Modifier.height(12.dp))
             Text(
@@ -210,7 +274,7 @@ fun BackupRestoreScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            files.forEach { file ->
+            backupFiles.forEach { file ->
                 val dateStr = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(
                     Date(file.lastModified()),
                 )
@@ -230,9 +294,18 @@ fun BackupRestoreScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     OutlinedButton(
                         onClick = {
-                            selectedBackupFile = file
-                            restoreSections = sections?.sections.orEmpty()
-                            showFilePicker = true
+                            scope.launch {
+                                try {
+                                    val entries = withContext(Dispatchers.IO) {
+                                        BackupManager.readZipEntries(file)
+                                    }
+                                    restoreSectionNames = deriveSections(entries)
+                                    restoreEntries = entries
+                                    restoreConfirmUri = Uri.fromFile(file)
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         },
                         enabled = !isRestoring,
                     ) {
@@ -251,31 +324,32 @@ fun BackupRestoreScreen(
         Spacer(modifier = Modifier.height(32.dp))
     }
 
-    if (showFilePicker && selectedBackupFile != null) {
-        val file = selectedBackupFile!!
+    if (restoreConfirmUri != null) {
+        val fileName = restoreConfirmUri!!.lastPathSegment ?: "backup"
         androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showFilePicker = false; selectedBackupFile = null },
+            onDismissRequest = { restoreConfirmUri = null },
             title = { Text(context.getString(R.string.backup_restore_confirm_title)) },
             text = {
-                Text(context.getString(R.string.backup_restore_confirm_message, file.name))
+                Text(context.getString(R.string.backup_restore_confirm_message, fileName))
             },
             confirmButton = {
                 androidx.compose.material3.TextButton(onClick = {
-                    showFilePicker = false
+                    val uri = restoreConfirmUri!!
+                    restoreConfirmUri = null
                     scope.launch {
                         isRestoring = true
                         try {
                             val result = withContext(Dispatchers.IO) {
-                                BackupManager.restoreBackup(
+                                BackupManager.restoreFromEntries(
                                     context = context,
-                                    backupFile = file,
+                                    entries = restoreEntries,
                                     settingsRepo = app.settingsRepository,
                                     apiKeyRepo = app.apiKeyRepository,
                                     channelRepo = app.channelConfigRepository,
                                     agentRepo = app.agentRepository,
                                     activityRepo = app.activityRepository,
                                     logRepo = app.logRepository,
-                                    sections = restoreSections,
+                                    sections = restoreSectionNames,
                                 )
                             }
                             statusMessage = result
@@ -284,7 +358,6 @@ fun BackupRestoreScreen(
                             statusMessage = context.getString(R.string.backup_restore_error) + ": " + e.message
                         } finally {
                             isRestoring = false
-                            selectedBackupFile = null
                         }
                     }
                 }) {
@@ -292,14 +365,34 @@ fun BackupRestoreScreen(
                 }
             },
             dismissButton = {
-                androidx.compose.material3.TextButton(onClick = {
-                    showFilePicker = false
-                    selectedBackupFile = null
-                }) {
+                androidx.compose.material3.TextButton(onClick = { restoreConfirmUri = null }) {
                     Text(context.getString(R.string.common_cancel))
                 }
             },
         )
+    }
+}
+
+private fun deriveSections(entries: Map<String, String>): List<String> {
+    val manifestJson = entries["manifest.json"]
+    if (manifestJson != null) {
+        try {
+            return org.json.JSONObject(manifestJson).optJSONArray("sections")
+                ?.let { arr -> (0 until arr.length()).map { arr.getString(it) } }
+                .orEmpty()
+        } catch (_: Exception) { }
+    }
+    return entries.keys.mapNotNull { key ->
+        when (key) {
+            "settings.json" -> "settings"
+            "api_keys.json" -> "api_keys"
+            "channels.json" -> "channels"
+            "agents.json" -> "agents"
+            "config_override.toml" -> "config_override"
+            "activity.json" -> "activity"
+            "logs.json" -> "logs"
+            else -> null
+        }
     }
 }
 

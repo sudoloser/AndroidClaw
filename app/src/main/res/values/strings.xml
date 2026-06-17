@@ -1691,6 +1691,7 @@
     <string name="backup_error">Backup failed</string>
     <string name="backup_available_backups">Available backups:</string>
     <string name="backup_restore_action">Restore</string>
+    <string name="backup_restore_from_file">Restore from file…</string>
     <string name="backup_restore_confirm_title">Restore backup?</string>
     <string name="backup_restore_confirm_message">This will restore data from:\n%s\n\nCurrent data will be replaced.</string>
     <string name="backup_restore_error">Restore failed</string>
