@@ -91,4 +91,11 @@ interface PluginRepository {
      * @param settings Current application settings to sync from.
      */
     suspend fun syncOfficialPluginStates(settings: AppSettings)
+
+    /**
+     * Replaces all plugins with the given list (upserts each one).
+     *
+     * @param plugins The full list of plugins to restore.
+     */
+    suspend fun restoreAllPlugins(plugins: List<Plugin>)
 }

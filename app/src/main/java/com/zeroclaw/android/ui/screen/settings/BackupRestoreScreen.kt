@@ -57,6 +57,7 @@ fun BackupRestoreScreen(
     var includeApiKeys by remember { mutableStateOf(true) }
     var includeChannels by remember { mutableStateOf(true) }
     var includeAgents by remember { mutableStateOf(true) }
+    var includePlugins by remember { mutableStateOf(true) }
     var includeConfigOverride by remember { mutableStateOf(true) }
     var includeActivity by remember { mutableStateOf(false) }
     var includeLogs by remember { mutableStateOf(false) }
@@ -78,7 +79,7 @@ fun BackupRestoreScreen(
 
     fun updateSelectAll() {
         selectAll = includeSettings && includeApiKeys && includeChannels &&
-            includeAgents && includeConfigOverride
+            includeAgents && includePlugins && includeConfigOverride
     }
 
     val saveBackupLauncher =
@@ -154,6 +155,7 @@ fun BackupRestoreScreen(
                 includeApiKeys = it
                 includeChannels = it
                 includeAgents = it
+                includePlugins = it
                 includeConfigOverride = it
                 includeActivity = false
                 includeLogs = false
@@ -181,6 +183,11 @@ fun BackupRestoreScreen(
             label = context.getString(R.string.backup_agents),
             checked = includeAgents,
             onCheck = { includeAgents = it; updateSelectAll() },
+        )
+        CheckboxRow(
+            label = context.getString(R.string.backup_plugins),
+            checked = includePlugins,
+            onCheck = { includePlugins = it; updateSelectAll() },
         )
         CheckboxRow(
             label = context.getString(R.string.backup_config_override),
@@ -211,6 +218,7 @@ fun BackupRestoreScreen(
                             includeApiKeys = includeApiKeys,
                             includeChannels = includeChannels,
                             includeAgents = includeAgents,
+                            includePlugins = includePlugins,
                             includeConfigOverride = includeConfigOverride,
                             includeActivity = includeActivity,
                             includeLogs = includeLogs,
@@ -222,6 +230,7 @@ fun BackupRestoreScreen(
                                 apiKeyRepo = app.apiKeyRepository,
                                 channelRepo = app.channelConfigRepository,
                                 agentRepo = app.agentRepository,
+                                pluginRepo = app.pluginRepository,
                                 activityRepo = app.activityRepository,
                                 logRepo = app.logRepository,
                                 options = options,
@@ -347,6 +356,7 @@ fun BackupRestoreScreen(
                                     apiKeyRepo = app.apiKeyRepository,
                                     channelRepo = app.channelConfigRepository,
                                     agentRepo = app.agentRepository,
+                                    pluginRepo = app.pluginRepository,
                                     activityRepo = app.activityRepository,
                                     logRepo = app.logRepository,
                                     sections = restoreSectionNames,
@@ -391,6 +401,7 @@ private fun deriveSections(entries: Map<String, String>): List<String> {
             "config_override.toml" -> "config_override"
             "activity.json" -> "activity"
             "logs.json" -> "logs"
+            "plugins.json" -> "plugins"
             else -> null
         }
     }

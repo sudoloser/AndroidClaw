@@ -1683,6 +1683,7 @@
     <string name="backup_api_keys">API 密钥</string>
     <string name="backup_channels">频道</string>
     <string name="backup_agents">代理</string>
+    <string name="backup_plugins">插件</string>
     <string name="backup_config_override">配置覆盖</string>
     <string name="backup_activity">活动历史</string>
     <string name="backup_logs">日志</string>

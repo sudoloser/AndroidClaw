@@ -903,10 +903,9 @@ object ConfigTomlBuilder {
         appendLine()
         appendLine("[browser]")
         appendLine("enabled = true")
-        if (config.browserAllowedDomains.isNotEmpty()) {
-            val list = config.browserAllowedDomains.joinToString(", ") { tomlString(it) }
-            appendLine("allowed_domains = [$list]")
-        }
+        val browserDomains = config.browserAllowedDomains.ifEmpty { listOf("*") }
+        val browserList = browserDomains.joinToString(", ") { tomlString(it) }
+        appendLine("allowed_domains = [$browserList]")
     }
 
     /**
@@ -922,10 +921,9 @@ object ConfigTomlBuilder {
         appendLine()
         appendLine("[http_request]")
         appendLine("enabled = true")
-        if (config.httpRequestAllowedDomains.isNotEmpty()) {
-            val list = config.httpRequestAllowedDomains.joinToString(", ") { tomlString(it) }
-            appendLine("allowed_domains = [$list]")
-        }
+        val httpDomains = config.httpRequestAllowedDomains.ifEmpty { listOf("*") }
+        val httpList = httpDomains.joinToString(", ") { tomlString(it) }
+        appendLine("allowed_domains = [$httpList]")
         if (config.httpRequestMaxResponseSize != GlobalTomlConfig.DEFAULT_HTTP_REQUEST_MAX_RESPONSE_SIZE) {
             appendLine("max_response_size = ${config.httpRequestMaxResponseSize.coerceAtLeast(0)}")
         }
@@ -1015,9 +1013,8 @@ object ConfigTomlBuilder {
      * Upstream fields: enabled, allowed_domains, blocked_domains,
      * max_response_size, timeout_secs.
      *
-     * When `allowed_domains` is empty and the section is not emitted,
-     * the upstream daemon defaults to wildcard (`*`), allowing fetches
-     * from any domain.
+     * When `allowed_domains` is empty, it defaults to wildcard (`*`),
+     * allowing fetches from any domain.
      *
      * @param config Configuration to read web fetch values from.
      */
@@ -1026,10 +1023,9 @@ object ConfigTomlBuilder {
         appendLine()
         appendLine("[web_fetch]")
         appendLine("enabled = true")
-        if (config.webFetchAllowedDomains.isNotEmpty()) {
-            val list = config.webFetchAllowedDomains.joinToString(", ") { tomlString(it) }
-            appendLine("allowed_domains = [$list]")
-        }
+        val fetchDomains = config.webFetchAllowedDomains.ifEmpty { listOf("*") }
+        val fetchList = fetchDomains.joinToString(", ") { tomlString(it) }
+        appendLine("allowed_domains = [$fetchList]")
         if (config.webFetchBlockedDomains.isNotEmpty()) {
             val list = config.webFetchBlockedDomains.joinToString(", ") { tomlString(it) }
             appendLine("blocked_domains = [$list]")

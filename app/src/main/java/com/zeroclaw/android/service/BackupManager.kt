@@ -13,11 +13,14 @@ import com.zeroclaw.android.model.ConnectedChannel
 import com.zeroclaw.android.model.KeyStatus
 import com.zeroclaw.android.model.LogEntry
 import com.zeroclaw.android.model.LogSeverity
+import com.zeroclaw.android.model.Plugin
+import com.zeroclaw.android.model.PluginCategory
 import com.zeroclaw.android.data.repository.ActivityRepository
 import com.zeroclaw.android.data.repository.AgentRepository
 import com.zeroclaw.android.data.repository.ApiKeyRepository
 import com.zeroclaw.android.data.repository.ChannelConfigRepository
 import com.zeroclaw.android.data.repository.LogRepository
+import com.zeroclaw.android.data.repository.PluginRepository
 import com.zeroclaw.android.data.repository.SettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -39,6 +42,7 @@ data class BackupOptions(
     val includeApiKeys: Boolean = true,
     val includeChannels: Boolean = true,
     val includeAgents: Boolean = true,
+    val includePlugins: Boolean = true,
     val includeConfigOverride: Boolean = true,
     val includeActivity: Boolean = false,
     val includeLogs: Boolean = false,
@@ -111,6 +115,7 @@ object BackupManager {
         apiKeyRepo: ApiKeyRepository,
         channelRepo: ChannelConfigRepository,
         agentRepo: AgentRepository,
+        pluginRepo: PluginRepository,
         activityRepo: ActivityRepository,
         logRepo: LogRepository,
         sections: List<String>,
@@ -157,6 +162,16 @@ object BackupManager {
             }
         }
 
+        if ("plugins" in sections && "plugins.json" in entries) {
+            try {
+                val json = JSONArray(entries["plugins.json"]!!)
+                restorePlugins(pluginRepo, json)
+                results.add("Plugins restored")
+            } catch (e: Exception) {
+                results.add("Plugins failed: ${e.message}")
+            }
+        }
+
         if ("config_override" in sections && "config_override.toml" in entries) {
             try {
                 val content = entries["config_override.toml"]!!
@@ -196,6 +211,7 @@ object BackupManager {
         apiKeyRepo: ApiKeyRepository,
         channelRepo: ChannelConfigRepository,
         agentRepo: AgentRepository,
+        pluginRepo: PluginRepository,
         activityRepo: ActivityRepository,
         logRepo: LogRepository,
         options: BackupOptions,
@@ -237,6 +253,13 @@ object BackupManager {
                 sections.add("agents")
             }
 
+            if (options.includePlugins) {
+                val plugins = pluginRepo.plugins.first()
+                val json = serializePlugins(plugins)
+                addEntry(zos, "plugins.json", json.toString(2))
+                sections.add("plugins")
+            }
+
             if (options.includeConfigOverride) {
                 val overrideFile = File(context.filesDir, "config_override.toml")
                 if (overrideFile.exists()) {
@@ -274,12 +297,13 @@ object BackupManager {
         apiKeyRepo: ApiKeyRepository,
         channelRepo: ChannelConfigRepository,
         agentRepo: AgentRepository,
+        pluginRepo: PluginRepository,
         activityRepo: ActivityRepository,
         logRepo: LogRepository,
         sections: List<String>,
     ): String = withContext(Dispatchers.IO) {
         val entries = readZipEntries(backupFile)
-        restoreFromEntries(context, entries, settingsRepo, apiKeyRepo, channelRepo, agentRepo, activityRepo, logRepo, sections)
+        restoreFromEntries(context, entries, settingsRepo, apiKeyRepo, channelRepo, agentRepo, pluginRepo, activityRepo, logRepo, sections)
     }
 
     fun listBackupFiles(context: Context): List<File> {
@@ -590,5 +614,54 @@ object BackupManager {
             } catch (_: Exception) { continue }
             repo.append(severity, obj.getString("tag"), obj.getString("message"))
         }
+    }
+
+    private fun serializePlugins(plugins: List<Plugin>): JSONArray {
+        return JSONArray(plugins.map { plugin ->
+            JSONObject().apply {
+                put("id", plugin.id)
+                put("name", plugin.name)
+                put("description", plugin.description)
+                put("version", plugin.version)
+                put("author", plugin.author)
+                put("category", plugin.category.name)
+                put("is_installed", plugin.isInstalled)
+                put("is_enabled", plugin.isEnabled)
+                put("config_fields", JSONObject(plugin.configFields))
+                plugin.remoteVersion?.let { put("remote_version", it) }
+            }
+        })
+    }
+
+    private suspend fun restorePlugins(
+        repo: PluginRepository,
+        json: JSONArray,
+    ) {
+        val plugins = mutableListOf<Plugin>()
+        for (i in 0 until json.length()) {
+            val obj = json.getJSONObject(i)
+            val category = try {
+                PluginCategory.valueOf(obj.getString("category"))
+            } catch (_: Exception) { PluginCategory.OTHER }
+            val configFields = mutableMapOf<String, String>()
+            obj.optJSONObject("config_fields")?.keys()?.forEach { k ->
+                configFields[k] = obj.getJSONObject("config_fields").getString(k)
+            }
+            plugins.add(
+                Plugin(
+                    id = obj.getString("id"),
+                    name = obj.getString("name"),
+                    description = obj.optString("description", ""),
+                    version = obj.optString("version", ""),
+                    author = obj.optString("author", ""),
+                    category = category,
+                    isInstalled = obj.optBoolean("is_installed", false),
+                    isEnabled = obj.optBoolean("is_enabled", false),
+                    configFields = configFields,
+                    remoteVersion = if (obj.has("remote_version")) obj.getString("remote_version") else null,
+                ),
+            )
+        }
+        repo.restoreAllPlugins(plugins)
     }
 }

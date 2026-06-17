@@ -1683,6 +1683,7 @@
     <string name="backup_api_keys">API Keys</string>
     <string name="backup_channels">Channels</string>
     <string name="backup_agents">Agents</string>
+    <string name="backup_plugins">Plugins</string>
     <string name="backup_config_override">Config Override</string>
     <string name="backup_activity">Activity History</string>
     <string name="backup_logs">Logs</string>

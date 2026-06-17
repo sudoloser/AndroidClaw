@@ -105,6 +105,12 @@ class RoomPluginRepository(
         }
     }
 
+    override suspend fun restoreAllPlugins(plugins: List<Plugin>) {
+        for (plugin in plugins) {
+            dao.upsert(plugin.toEntity())
+        }
+    }
+
     /** Constants for [RoomPluginRepository]. */
     companion object {
         private const val TAG = "PluginRepo"
