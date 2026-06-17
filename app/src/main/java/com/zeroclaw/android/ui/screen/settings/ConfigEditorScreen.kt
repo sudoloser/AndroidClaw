@@ -42,6 +42,16 @@ private const val CONFIG_FIELD_MIN_LINES = 16
 private const val MIN_TOUCH_TARGET_DP = 48
 private const val SECTION_SPACING_DP = 16
 
+/**
+ * Full-screen editor for the running daemon's TOML configuration.
+ *
+ * Loads the live config from the FFI layer, allows editing, validates
+ * with [validateConfig], and saves to config_override.toml then
+ * restarts the daemon on save.
+ *
+ * @param edgeMargin Horizontal padding based on window width size class.
+ * @param modifier Modifier applied to the root layout.
+ */
 @Composable
 fun ConfigEditorScreen(
     edgeMargin: Dp,
