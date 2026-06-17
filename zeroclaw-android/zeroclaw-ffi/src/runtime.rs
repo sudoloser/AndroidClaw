@@ -662,6 +662,27 @@ pub(crate) fn get_running_config_inner() -> Result<String, FfiError> {
     })?
 }
 
+/// Writes a TOML config string to `{data_dir}/config_override.toml`.
+///
+/// If the parent directory does not exist, it is created. Overwrites any
+/// existing file. The caller is responsible for ensuring the TOML is valid
+/// (use [`validate_config_inner`] first).
+///
+/// # Errors
+///
+/// Returns [`FfiError::SpawnError`] if the file cannot be written.
+pub(crate) fn write_config_file_inner(data_dir: String, config_toml: String) -> Result<(), FfiError> {
+    let path = PathBuf::from(&data_dir).join("config_override.toml");
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| FfiError::SpawnError {
+            detail: format!("failed to create config dir: {e}"),
+        })?;
+    }
+    std::fs::write(&path, &config_toml).map_err(|e| FfiError::SpawnError {
+        detail: format!("failed to write config override: {e}"),
+    })
+}
+
 /// Validates a TOML config string without starting the daemon.
 ///
 /// Parses `config_toml` using the same `toml::from_str::<Config>()` call

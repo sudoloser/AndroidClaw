@@ -836,6 +836,10 @@
     <string name="settings_state_auto_sync_enabled">已启用自动同步</string>
     <string name="settings_state_configured">已配置</string>
     <string name="settings_state_manual_only">仅手动</string>
+    <string name="settings_item_config_editor">配置编辑器</string>
+    <string name="settings_item_config_editor_subtitle">查看并编辑运行中配置 TOML</string>
+    <string name="settings_item_file_manager">文件管理器</string>
+    <string name="settings_item_file_manager_subtitle">浏览工作区文件</string>
     <string name="settings_state_not_set">未设置</string>
     <string name="settings_state_open_access">开放访问</string>
     <string name="settings_state_pairing_required">需要配对</string>
@@ -1628,4 +1632,21 @@
     <string name="error_sanitizer_storage_readback_failed">存储校验失败。</string>
     <string name="daemon_unknown_error_fallback">守护进程未知错误</string>
     <string name="common_unknown">未知</string>
+    <string name="config_editor_title">运行配置</string>
+    <string name="config_editor_description">编辑上方运行中的守护进程配置。验证错误（如有）会显示在编辑器下方。保存将写入 config_override.toml 并重启守护进程。</string>
+    <string name="config_editor_save">保存并重启</string>
+    <string name="config_editor_validation_success">配置有效</string>
+    <string name="config_editor_load_error">加载运行配置失败</string>
+    <string name="config_editor_save_success">配置已保存，守护进程重启中…</string>
+    <string name="config_editor_save_error">保存或重启失败</string>
+    <string name="config_editor_save_tooltip">保存 config_override.toml 并重启守护进程</string>
+    <string name="config_editor_daemon_not_running">守护进程未运行</string>
+    <string name="file_manager_title">文件管理器</string>
+    <string name="file_manager_workspace_label">工作区</string>
+    <string name="file_manager_delete_confirm_title">删除文件？</string>
+    <string name="file_manager_delete_confirm_message">确定删除 %s 吗？</string>
+    <string name="file_manager_delete_success">文件已删除</string>
+    <string name="file_manager_delete_error">删除文件失败</string>
+    <string name="file_manager_file_read_error">读取文件失败</string>
+    <string name="file_manager_empty_dir">此目录为空</string>
 </resources>

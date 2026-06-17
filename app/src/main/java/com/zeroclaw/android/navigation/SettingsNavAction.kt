@@ -82,4 +82,10 @@ sealed interface SettingsNavAction {
 
     /** Navigate to the auth profiles management screen. */
     data object AuthProfiles : SettingsNavAction
+
+    /** Navigate to the running config TOML editor screen. */
+    data object ConfigEditor : SettingsNavAction
+
+    /** Navigate to the file manager screen. */
+    data object FileManager : SettingsNavAction
 }

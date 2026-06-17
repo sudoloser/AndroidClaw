@@ -182,3 +182,11 @@ data object AuthProfilesRoute
 /** Post-onboarding daemon setup and channel initialization screen. */
 @Serializable
 data object SetupRoute
+
+/** TOML running-config editor sub-screen. */
+@Serializable
+data object ConfigEditorRoute
+
+/** File manager sub-screen. */
+@Serializable
+data object FileManagerRoute

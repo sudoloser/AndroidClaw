@@ -15,6 +15,7 @@ import com.zeroclaw.android.model.MemoryHealthResult
 import com.zeroclaw.android.model.ServiceState
 import com.zeroclaw.ffi.FfiException
 import com.zeroclaw.ffi.getConfiguredChannelNames
+import com.zeroclaw.ffi.getRunningConfig
 import com.zeroclaw.ffi.getStatus
 import com.zeroclaw.ffi.scaffoldWorkspace
 import com.zeroclaw.ffi.sendMessage
@@ -690,6 +691,20 @@ class DaemonServiceBridge(
                 false
             }
         }
+
+    /**
+     * Returns the TOML configuration string from the running daemon.
+     *
+     * Safe to call from the main thread. The underlying blocking FFI call
+     * is dispatched to [Dispatchers.IO] and completes near-instantly as it
+     * only serialises the in-memory config struct.
+     *
+     * @return The running daemon's configuration as a TOML string.
+     * @throws FfiException if the daemon is not running.
+     */
+    @Throws(FfiException::class)
+    suspend fun fetchRunningConfig(): String =
+        withContext(ioDispatcher) { getRunningConfig() }
 
     /**
      * Stops and re-starts the daemon with a fresh configuration.

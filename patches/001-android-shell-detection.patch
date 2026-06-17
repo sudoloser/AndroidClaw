@@ -1,0 +1,36 @@
+diff --git a/src/runtime/native.rs b/src/runtime/native.rs
+index c4bdd6cae..4254065d7 100644
+--- a/src/runtime/native.rs
++++ b/src/runtime/native.rs
+@@ -60,7 +60,30 @@ fn detect_native_shell() -> Option<ShellProgram> {
+         let comspec = std::env::var_os("COMSPEC").map(PathBuf::from);
+         detect_native_shell_with(true, |name| which::which(name).ok(), comspec)
+     }
+-    #[cfg(not(target_os = "windows"))]
++    #[cfg(target_os = "android")]
++    {
++        detect_native_shell_with(false, |name| which::which(name).ok(), None).or_else(|| {
++            for path in [
++                "/data/data/com.termux/files/usr/bin/sh",
++                "/data/data/com.termux/files/usr/bin/bash",
++                "/system/bin/sh",
++            ] {
++                let p = std::path::Path::new(path);
++                if p.exists() {
++                    return Some(ShellProgram {
++                        kind: if path.contains("bash") {
++                            ShellKind::Bash
++                        } else {
++                            ShellKind::Sh
++                        },
++                        program: p.to_path_buf(),
++                    });
++                }
++            }
++            None
++        })
++    }
++    #[cfg(all(not(target_os = "windows"), not(target_os = "android")))]
+     {
+         detect_native_shell_with(false, |name| which::which(name).ok(), None)
+     }

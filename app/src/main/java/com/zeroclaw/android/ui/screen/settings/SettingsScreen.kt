@@ -28,6 +28,8 @@ import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.GppGood
 import androidx.compose.material.icons.outlined.HealthAndSafety
+import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Hub
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Key
@@ -322,6 +324,18 @@ internal fun SettingsContent(
             title = stringResource(R.string.settings_item_scheduled_tasks),
             subtitle = stringResource(R.string.settings_item_scheduled_tasks_subtitle),
             onClick = { onNavigate(SettingsNavAction.CronJobs) },
+        )
+        SettingsListItem(
+            icon = Icons.Outlined.Build,
+            title = stringResource(R.string.settings_item_config_editor),
+            subtitle = stringResource(R.string.settings_item_config_editor_subtitle),
+            onClick = { onNavigate(SettingsNavAction.ConfigEditor) },
+        )
+        SettingsListItem(
+            icon = Icons.Outlined.Folder,
+            title = stringResource(R.string.settings_item_file_manager),
+            subtitle = stringResource(R.string.settings_item_file_manager_subtitle),
+            onClick = { onNavigate(SettingsNavAction.FileManager) },
         )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

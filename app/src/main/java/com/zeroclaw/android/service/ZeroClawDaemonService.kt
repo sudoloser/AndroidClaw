@@ -226,20 +226,20 @@ class ZeroClawDaemonService : Service() {
             val seededSettings = preSeedGatewayTokenIfNeeded(mergedSettings)
             val apiKey = apiKeyRepository.getByProviderFresh(seededSettings.defaultProvider)
 
-            val globalConfig =
-                buildGlobalTomlConfig(seededSettings, apiKey)
-
-            if (!validateProviderKeyOrStop(globalConfig)) return@launch
-
-            val baseToml = ConfigTomlBuilder.build(globalConfig)
-            val channelsToml =
-                ConfigTomlBuilder.buildChannelsToml(
-                    channelConfigRepository.getEnabledWithSecrets(),
-                )
-            val agentsToml = buildAgentsToml()
-            val configToml = baseToml + channelsToml + agentsToml
-
-            if (!validateConfigOrStop(configToml)) return@launch
+            val configToml: String
+            val overrideFile = java.io.File(filesDir, "config_override.toml")
+            if (overrideFile.exists()) {
+                val overrideText = overrideFile.readText()
+                if (overrideText.isNotBlank()) {
+                    configToml = overrideText
+                } else {
+                    Log.w(TAG, "config_override.toml is empty, falling back to settings build")
+                    configToml = buildConfigFromSettings(settings, effectiveSettings, seededSettings, apiKey)
+                }
+                if (!validateConfigOrStop(configToml)) return@launch
+            } else {
+                configToml = buildConfigFromSettings(settings, effectiveSettings, seededSettings, apiKey)
+            }
 
             val conflict = bridge.detectMemoryConflict(seededSettings.memoryBackend)
             if (conflict is MemoryConflict.StaleData) {
@@ -269,6 +269,35 @@ class ZeroClawDaemonService : Service() {
                 memoryBackend = seededSettings.memoryBackend,
             )
         }
+    }
+
+    /**
+     * Builds the full TOML config string from app settings.
+     *
+     * Combines the base config, channels config, and agents config
+     * into a single TOML string. Falls back to this when no
+     * [config_override.toml] exists on disk.
+     *
+     * @param settings The raw app settings.
+     * @param effectiveSettings Settings with defaults resolved.
+     * @param seededSettings Settings with gateway token pre-seeded.
+     * @param apiKey The resolved API key (may be null).
+     * @return Concatenated TOML configuration string.
+     */
+    private fun buildConfigFromSettings(
+        settings: AppSettings,
+        effectiveSettings: AppSettings,
+        seededSettings: AppSettings,
+        apiKey: ApiKey?,
+    ): String {
+        val globalConfig = buildGlobalTomlConfig(effectiveSettings, apiKey)
+        val baseToml = ConfigTomlBuilder.build(globalConfig)
+        val channelsToml =
+            ConfigTomlBuilder.buildChannelsToml(
+                channelConfigRepository.getEnabledWithSecrets(),
+            )
+        val agentsToml = buildAgentsToml()
+        return baseToml + channelsToml + agentsToml
     }
 
     /**

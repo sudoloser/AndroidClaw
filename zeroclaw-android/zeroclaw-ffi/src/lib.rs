@@ -256,6 +256,24 @@ pub fn get_running_config() -> Result<String, FfiError> {
     })
 }
 
+/// Writes a TOML config string to `{data_dir}/config_override.toml`.
+///
+/// Creates parent directories if necessary and overwrites any existing file.
+/// The caller should validate the TOML with [`validate_config`] first.
+///
+/// # Errors
+///
+/// Returns [`FfiError::SpawnError`] if the file cannot be written,
+/// or [`FfiError::InternalPanic`] if native code panics.
+#[uniffi::export]
+pub fn write_config_file(data_dir: String, config_toml: String) -> Result<(), FfiError> {
+    catch_unwind(|| runtime::write_config_file_inner(data_dir, config_toml)).unwrap_or_else(|e| {
+        Err(FfiError::InternalPanic {
+            detail: panic_detail(&e),
+        })
+    })
+}
+
 /// Hot-swaps the default provider and model without restarting the daemon.
 ///
 /// The change takes effect on the next message send. Does not persist

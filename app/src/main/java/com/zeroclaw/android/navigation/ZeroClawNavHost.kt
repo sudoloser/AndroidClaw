@@ -56,6 +56,8 @@ import com.zeroclaw.android.ui.screen.settings.SecurityOverviewScreen
 import com.zeroclaw.android.ui.screen.settings.ServiceConfigScreen
 import com.zeroclaw.android.ui.screen.settings.SettingsScreen
 import com.zeroclaw.android.ui.screen.settings.SettingsViewModel
+import com.zeroclaw.android.ui.screen.settings.ConfigEditorScreen
+import com.zeroclaw.android.ui.screen.settings.FileManagerScreen
 import com.zeroclaw.android.ui.screen.settings.TunnelScreen
 import com.zeroclaw.android.ui.screen.settings.UpdatesScreen
 import com.zeroclaw.android.ui.screen.settings.apikeys.ApiKeyDetailScreen
@@ -245,6 +247,10 @@ fun ZeroClawNavHost(
                             navController.navigate(EmbeddingRoutesRoute)
                         SettingsNavAction.AuthProfiles ->
                             navController.navigate(AuthProfilesRoute)
+                        SettingsNavAction.ConfigEditor ->
+                            navController.navigate(ConfigEditorRoute)
+                        SettingsNavAction.FileManager ->
+                            navController.navigate(FileManagerRoute)
                     }
                 },
                 onRerunWizard = {
@@ -542,6 +548,14 @@ fun ZeroClawNavHost(
 
         composable<AuthProfilesRoute> {
             AuthProfilesScreen(edgeMargin = edgeMargin)
+        }
+
+        composable<ConfigEditorRoute> {
+            ConfigEditorScreen(edgeMargin = edgeMargin)
+        }
+
+        composable<FileManagerRoute> {
+            FileManagerScreen(edgeMargin = edgeMargin)
         }
     }
 }

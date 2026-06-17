@@ -802,6 +802,10 @@
     <string name="settings_item_log_viewer_subtitle">View daemon and service logs</string>
     <string name="settings_item_memory_advanced">Memory Advanced</string>
     <string name="settings_item_memory_advanced_subtitle">Embedding, hygiene, recall weights, Qdrant</string>
+    <string name="settings_item_config_editor">Config Editor</string>
+    <string name="settings_item_config_editor_subtitle">View and edit live running config TOML</string>
+    <string name="settings_item_file_manager">File Manager</string>
+    <string name="settings_item_file_manager_subtitle">Browse workspace files</string>
     <string name="settings_item_memory_browser">Memory Browser</string>
     <string name="settings_item_memory_browser_subtitle">Browse and search memory entries</string>
     <string name="settings_item_model_routes">Model Routes</string>
@@ -1628,4 +1632,21 @@
     <string name="error_sanitizer_storage_readback_failed">Storage verification failed.</string>
     <string name="daemon_unknown_error_fallback">Unknown daemon error</string>
     <string name="common_unknown">unknown</string>
+    <string name="config_editor_title">Running Config</string>
+    <string name="config_editor_description">Edit the live daemon configuration above. Validation errors (if any) are shown below the editor. Save writes to config_override.toml and restarts the daemon.</string>
+    <string name="config_editor_save">Save &amp; Restart</string>
+    <string name="config_editor_validation_success">Valid configuration</string>
+    <string name="config_editor_load_error">Failed to load running config</string>
+    <string name="config_editor_save_success">Configuration saved, daemon restarting…</string>
+    <string name="config_editor_save_error">Failed to save or restart</string>
+    <string name="config_editor_save_tooltip">Save config_override.toml and restart daemon</string>
+    <string name="config_editor_daemon_not_running">Daemon is not running</string>
+    <string name="file_manager_title">File Manager</string>
+    <string name="file_manager_workspace_label">Workspace</string>
+    <string name="file_manager_delete_confirm_title">Delete file?</string>
+    <string name="file_manager_delete_confirm_message">Are you sure you want to delete %s?</string>
+    <string name="file_manager_delete_success">File deleted</string>
+    <string name="file_manager_delete_error">Failed to delete file</string>
+    <string name="file_manager_file_read_error">Failed to read file</string>
+    <string name="file_manager_empty_dir">This directory is empty</string>
 </resources>

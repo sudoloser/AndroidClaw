@@ -1,0 +1,91 @@
+name: Debug Build
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+    inputs:
+      build-rust:
+        description: "Rebuild Rust FFI (skip to use cache)"
+        type: boolean
+        default: true
+      run-tests:
+        description: "Run unit tests"
+        type: boolean
+        default: true
+      upload-apk:
+        description: "Upload debug APK"
+        type: boolean
+        default: true
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  build-debug:
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Apply submodule patches
+        run: if ls patches/*.patch 1>/dev/null 2>&1; then cd zeroclaw && git apply ../patches/*.patch; fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: sdkmanager "ndk;27.2.12479018"
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, x86_64-linux-android
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: zeroclaw-android -> target
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run Rust tests
+        if: ${{ inputs.run-tests != false }}
+        working-directory: zeroclaw-android
+        run: cargo test -p zeroclaw-ffi --verbose
+
+      - name: Run Kotlin unit tests
+        if: ${{ inputs.run-tests != false }}
+        run: ./gradlew :app:testDebugUnitTest :lib:testDebugUnitTest
+
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug
+
+      - name: Upload debug APK
+        if: ${{ inputs.upload-apk != false }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeroclaw_debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+
+      - name: Summarize build
+        run: |
+          APK=$(ls -lh app/build/outputs/apk/debug/app-debug.apk 2>/dev/null | awk '{print $5}')
+          echo "### Debug Build Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- APK size: ${APK:-not found}" >> "$GITHUB_STEP_SUMMARY"
