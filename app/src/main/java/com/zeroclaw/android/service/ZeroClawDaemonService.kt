@@ -284,7 +284,7 @@ class ZeroClawDaemonService : Service() {
      * @param apiKey The resolved API key (may be null).
      * @return Concatenated TOML configuration string.
      */
-    private fun buildConfigFromSettings(
+    private suspend fun buildConfigFromSettings(
         settings: AppSettings,
         effectiveSettings: AppSettings,
         seededSettings: AppSettings,
