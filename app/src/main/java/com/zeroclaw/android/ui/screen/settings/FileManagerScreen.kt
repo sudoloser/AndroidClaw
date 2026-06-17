@@ -73,7 +73,6 @@ fun FileManagerScreen(
     var currentDir by remember { mutableStateOf(workspaceDir) }
     var entries by remember(currentDir) { mutableStateOf(currentDir.listFiles()?.toList() ?: emptyList()) }
 
-    var fileContent by remember { mutableStateOf<String?>(null) }
     var editingFile by remember { mutableStateOf<File?>(null) }
     var editText by remember { mutableStateOf("") }
     var deleteTarget by remember { mutableStateOf<File?>(null) }

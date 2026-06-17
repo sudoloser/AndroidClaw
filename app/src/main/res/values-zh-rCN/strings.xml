@@ -1672,4 +1672,26 @@
     <string name="file_manager_folder_import_hint">使用设备文件管理器将文件复制到工作区目录</string>
     <string name="file_manager_save_success">文件已保存</string>
     <string name="file_manager_save_error">保存失败</string>
+
+    <string name="settings_item_backup_restore">备份与恢复</string>
+    <string name="settings_item_backup_restore_subtitle">备份或恢复应用数据</string>
+
+    <string name="backup_restore_title">备份与恢复</string>
+    <string name="backup_restore_description">选择要包含在备份中的内容。文件保存在应用的私有存储中。</string>
+    <string name="backup_select_all">全选</string>
+    <string name="backup_settings">设置</string>
+    <string name="backup_api_keys">API 密钥</string>
+    <string name="backup_channels">频道</string>
+    <string name="backup_agents">代理</string>
+    <string name="backup_config_override">配置覆盖</string>
+    <string name="backup_activity">活动历史</string>
+    <string name="backup_logs">日志</string>
+    <string name="backup_action">创建备份</string>
+    <string name="backup_success">备份已保存：%s</string>
+    <string name="backup_error">备份失败</string>
+    <string name="backup_available_backups">可用备份：</string>
+    <string name="backup_restore_action">恢复</string>
+    <string name="backup_restore_confirm_title">恢复备份？</string>
+    <string name="backup_restore_confirm_message">将从以下文件恢复数据：\n%s\n\n当前数据将被替换。</string>
+    <string name="backup_restore_error">恢复失败</string>
 </resources>

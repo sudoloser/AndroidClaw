@@ -41,6 +41,7 @@ import com.zeroclaw.android.ui.screen.plugins.PluginsScreen
 import com.zeroclaw.android.ui.screen.plugins.PluginsViewModel
 import com.zeroclaw.android.ui.screen.settings.AboutScreen
 import com.zeroclaw.android.ui.screen.settings.AutonomyScreen
+import com.zeroclaw.android.ui.screen.settings.BackupRestoreScreen
 import com.zeroclaw.android.ui.screen.settings.BatterySettingsScreen
 import com.zeroclaw.android.ui.screen.settings.ConfigEditorScreen
 import com.zeroclaw.android.ui.screen.settings.CostDetailScreen
@@ -251,6 +252,8 @@ fun ZeroClawNavHost(
                             navController.navigate(ConfigEditorRoute)
                         SettingsNavAction.FileManager ->
                             navController.navigate(FileManagerRoute)
+                        SettingsNavAction.BackupRestore ->
+                            navController.navigate(BackupRestoreRoute)
                     }
                 },
                 onRerunWizard = {
@@ -556,6 +559,10 @@ fun ZeroClawNavHost(
 
         composable<FileManagerRoute> {
             FileManagerScreen(edgeMargin = edgeMargin)
+        }
+
+        composable<BackupRestoreRoute> {
+            BackupRestoreScreen(edgeMargin = edgeMargin)
         }
     }
 }

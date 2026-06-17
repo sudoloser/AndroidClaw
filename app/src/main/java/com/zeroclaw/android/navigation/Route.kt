@@ -190,3 +190,7 @@ data object ConfigEditorRoute
 /** File manager sub-screen. */
 @Serializable
 data object FileManagerRoute
+
+/** Backup and restore sub-screen. */
+@Serializable
+data object BackupRestoreRoute

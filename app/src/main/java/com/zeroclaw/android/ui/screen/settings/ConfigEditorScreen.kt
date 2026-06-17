@@ -44,7 +44,7 @@ private const val CONFIG_FIELD_MIN_LINES = 16
 private const val MIN_TOUCH_TARGET_DP = 48
 private const val SECTION_SPACING_DP = 16
 
-private const val DEFAULT_TEMPLATE = """
+private val DEFAULT_TEMPLATE = """
 # ZeroClaw configuration override
 # Uncomment and modify fields as needed.
 # This file overrides settings when the daemon starts (if non-empty).

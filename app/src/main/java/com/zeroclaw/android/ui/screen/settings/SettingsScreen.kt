@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Subject
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.BatteryAlert
 import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.DarkMode
@@ -336,6 +337,12 @@ internal fun SettingsContent(
             title = stringResource(R.string.settings_item_file_manager),
             subtitle = stringResource(R.string.settings_item_file_manager_subtitle),
             onClick = { onNavigate(SettingsNavAction.FileManager) },
+        )
+        SettingsListItem(
+            icon = Icons.Outlined.Backup,
+            title = stringResource(R.string.settings_item_backup_restore),
+            subtitle = stringResource(R.string.settings_item_backup_restore_subtitle),
+            onClick = { onNavigate(SettingsNavAction.BackupRestore) },
         )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

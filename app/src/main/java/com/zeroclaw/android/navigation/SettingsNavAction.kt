@@ -88,4 +88,7 @@ sealed interface SettingsNavAction {
 
     /** Navigate to the file manager screen. */
     data object FileManager : SettingsNavAction
+
+    /** Navigate to the backup and restore screen. */
+    data object BackupRestore : SettingsNavAction
 }
