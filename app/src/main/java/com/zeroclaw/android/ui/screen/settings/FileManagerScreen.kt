@@ -39,13 +39,11 @@ import com.zeroclaw.android.ZeroClawApplication
 import java.io.File
 
 /**
- * Full-screen workspace file browser.
+ * Full-screen workspace file browser rooted at `filesDir/workspace`.
  *
- * Starts at [workspaceDir] (default: `filesDir/workspace`), supports
- * directory navigation, file content viewing, and file deletion with
- * a confirmation dialog.
+ * Supports directory navigation, file content viewing, and file
+ * deletion with a confirmation dialog.
  *
- * @param workspaceDir The root directory to browse.
  * @param edgeMargin Horizontal padding based on window width size class.
  * @param modifier Modifier applied to the root layout.
  */
