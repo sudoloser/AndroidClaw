@@ -302,13 +302,40 @@ object BackupManager {
         }
     }
 
+    @Suppress("LongMethod")
     private suspend fun restoreSettings(
         repo: SettingsRepository,
         json: JSONObject,
     ) {
-        // Settings are restored individually through available repo methods.
-        // The caller should restart the daemon after restore.
-        Log.i(TAG, "Settings restore: ${json.toString()}")
+        if (json.has("host")) repo.setHost(json.getString("host"))
+        if (json.has("port")) repo.setPort(json.getInt("port"))
+        if (json.has("auto_start_on_boot")) repo.setAutoStartOnBoot(json.getBoolean("auto_start_on_boot"))
+        if (json.has("default_provider")) repo.setDefaultProvider(json.getString("default_provider"))
+        if (json.has("default_model")) repo.setDefaultModel(json.getString("default_model"))
+        if (json.has("default_temperature")) repo.setDefaultTemperature(json.getDouble("default_temperature").toFloat())
+        if (json.has("compact_context")) repo.setCompactContext(json.getBoolean("compact_context"))
+        if (json.has("cost_enabled")) repo.setCostEnabled(json.getBoolean("cost_enabled"))
+        if (json.has("daily_limit_usd")) repo.setDailyLimitUsd(json.getDouble("daily_limit_usd").toFloat())
+        if (json.has("monthly_limit_usd")) repo.setMonthlyLimitUsd(json.getDouble("monthly_limit_usd").toFloat())
+        if (json.has("cost_warn_at_percent")) repo.setCostWarnAtPercent(json.getInt("cost_warn_at_percent"))
+        if (json.has("provider_retries")) repo.setProviderRetries(json.getInt("provider_retries"))
+        if (json.has("fallback_providers")) repo.setFallbackProviders(json.getString("fallback_providers"))
+        if (json.has("memory_backend")) repo.setMemoryBackend(json.getString("memory_backend"))
+        if (json.has("memory_auto_save")) repo.setMemoryAutoSave(json.getBoolean("memory_auto_save"))
+        if (json.has("identity_json")) repo.setIdentityJson(json.getString("identity_json"))
+        if (json.has("autonomy_level")) repo.setAutonomyLevel(json.getString("autonomy_level"))
+        if (json.has("workspace_only")) repo.setWorkspaceOnly(json.getBoolean("workspace_only"))
+        if (json.has("allowed_commands")) repo.setAllowedCommands(json.getString("allowed_commands"))
+        if (json.has("forbidden_paths")) repo.setForbiddenPaths(json.getString("forbidden_paths"))
+        if (json.has("max_actions_per_hour")) repo.setMaxActionsPerHour(json.getInt("max_actions_per_hour"))
+        if (json.has("max_cost_per_day_cents")) repo.setMaxCostPerDayCents(json.getInt("max_cost_per_day_cents"))
+        if (json.has("require_approval_medium_risk")) repo.setRequireApprovalMediumRisk(json.getBoolean("require_approval_medium_risk"))
+        if (json.has("block_high_risk_commands")) repo.setBlockHighRiskCommands(json.getBoolean("block_high_risk_commands"))
+        if (json.has("theme")) {
+            try {
+                repo.setTheme(com.zeroclaw.android.model.ThemeMode.valueOf(json.getString("theme")))
+            } catch (_: Exception) { }
+        }
     }
 
     private fun serializeApiKeys(keys: List<ApiKey>): JSONArray {
