@@ -7,7 +7,9 @@ import com.zeroclaw.android.model.ActivityType
 import com.zeroclaw.android.model.Agent
 import com.zeroclaw.android.model.ApiKey
 import com.zeroclaw.android.model.AppSettings
+import com.zeroclaw.android.model.ChannelType
 import com.zeroclaw.android.model.ConnectedChannel
+import com.zeroclaw.android.model.KeyStatus
 import com.zeroclaw.android.model.LogEntry
 import com.zeroclaw.android.model.LogSeverity
 import com.zeroclaw.android.data.repository.ActivityRepository
@@ -337,8 +339,8 @@ object BackupManager {
                 baseUrl = obj.optString("base_url", ""),
                 createdAt = obj.optLong("created_at", System.currentTimeMillis()),
                 status = try {
-                    ApiKey.KeyStatus.valueOf(obj.optString("status", "ACTIVE"))
-                } catch (_: Exception) { ApiKey.KeyStatus.ACTIVE },
+                    KeyStatus.valueOf(obj.optString("status", "ACTIVE"))
+                } catch (_: Exception) { KeyStatus.ACTIVE },
                 refreshToken = obj.optString("refresh_token", ""),
                 expiresAt = obj.optLong("expires_at", 0L),
             )
@@ -377,7 +379,7 @@ object BackupManager {
             }
             val typeStr = obj.getString("type")
             val channelType = try {
-                com.zeroclaw.android.model.ChannelType.valueOf(typeStr)
+                ChannelType.valueOf(typeStr)
             } catch (_: Exception) { null } ?: continue
 
             val channel = ConnectedChannel(
