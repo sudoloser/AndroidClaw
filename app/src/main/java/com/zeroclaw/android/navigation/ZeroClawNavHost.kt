@@ -42,8 +42,10 @@ import com.zeroclaw.android.ui.screen.plugins.PluginsViewModel
 import com.zeroclaw.android.ui.screen.settings.AboutScreen
 import com.zeroclaw.android.ui.screen.settings.AutonomyScreen
 import com.zeroclaw.android.ui.screen.settings.BatterySettingsScreen
+import com.zeroclaw.android.ui.screen.settings.ConfigEditorScreen
 import com.zeroclaw.android.ui.screen.settings.CostDetailScreen
 import com.zeroclaw.android.ui.screen.settings.EmbeddingRoutesScreen
+import com.zeroclaw.android.ui.screen.settings.FileManagerScreen
 import com.zeroclaw.android.ui.screen.settings.GatewayScreen
 import com.zeroclaw.android.ui.screen.settings.IdentityScreen
 import com.zeroclaw.android.ui.screen.settings.MemoryAdvancedScreen
@@ -56,8 +58,6 @@ import com.zeroclaw.android.ui.screen.settings.SecurityOverviewScreen
 import com.zeroclaw.android.ui.screen.settings.ServiceConfigScreen
 import com.zeroclaw.android.ui.screen.settings.SettingsScreen
 import com.zeroclaw.android.ui.screen.settings.SettingsViewModel
-import com.zeroclaw.android.ui.screen.settings.ConfigEditorScreen
-import com.zeroclaw.android.ui.screen.settings.FileManagerScreen
 import com.zeroclaw.android.ui.screen.settings.TunnelScreen
 import com.zeroclaw.android.ui.screen.settings.UpdatesScreen
 import com.zeroclaw.android.ui.screen.settings.apikeys.ApiKeyDetailScreen

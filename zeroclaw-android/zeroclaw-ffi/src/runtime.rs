@@ -671,7 +671,10 @@ pub(crate) fn get_running_config_inner() -> Result<String, FfiError> {
 /// # Errors
 ///
 /// Returns [`FfiError::SpawnError`] if the file cannot be written.
-pub(crate) fn write_config_file_inner(data_dir: String, config_toml: String) -> Result<(), FfiError> {
+pub(crate) fn write_config_file_inner(
+    data_dir: String,
+    config_toml: String,
+) -> Result<(), FfiError> {
     let path = PathBuf::from(&data_dir).join("config_override.toml");
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).map_err(|e| FfiError::SpawnError {

@@ -23,13 +23,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Subject
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.BatteryAlert
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.GppGood
 import androidx.compose.material.icons.outlined.HealthAndSafety
-import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Hub
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Key
